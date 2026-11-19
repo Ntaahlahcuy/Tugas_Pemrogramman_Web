@@ -1,0 +1,23 @@
+[
+  {
+    "id": "kopi-tubruk",
+    "nama": "Kopi Tubruk",
+    "deskripsi": "Seduhan klasik, pekat dan harum.",
+    "kategori": "panas",
+    "harga": 15000
+  },
+  {
+    "id": "es-kopi-susu",
+    "nama": "Es Kopi Susu",
+    "deskripsi": "Espresso, susu segar, dan gula aren.",
+    "kategori": "dingin",
+    "harga": 22000
+  },
+  {
+    "id": "v60-single-origin",
+    "nama": "V60 Single Origin",
+    "deskripsi": "Seduh manual, rasa buah yang bersih.",
+    "kategori": "panas",
+    "harga": 28000
+  }
+]

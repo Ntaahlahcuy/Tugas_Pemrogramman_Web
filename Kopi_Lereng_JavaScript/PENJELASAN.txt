@@ -1,0 +1,307 @@
+PENJELASAN CODING WEB KOPI LERENG
+===============================
+
+1. GAMBARAN ISI WEB
+------------------
+Web ini merupakan contoh profil kedai kopi bernama Kopi Lereng. Web mempunyai
+dua halaman yang saling terhubung melalui navigasi Beranda dan Tentang.
+
+Halaman Beranda memuat:
+- Nama kedai pada header dan menu navigasi.
+- Judul pembuka "Kopi lokal, diseduh dengan sabar."
+- Deskripsi biji kopi dan tautan menuju halaman Tentang.
+- Tiga menu: Kopi Tubruk Rp 15.000, Es Kopi Susu Rp 22.000,
+  dan V60 Single Origin Rp 28.000.
+- Filter kategori Panas/Dingin, simulasi total harga, dan kirim pesanan demo ke API jika server aktif.
+- Footer dengan tahun yang diperbarui otomatis.
+
+Halaman Tentang memuat cerita asal kedai, alamat, jam buka, dan email.
+Informasi alamat dan email tetap mengikuti file awal. Jl. Contoh No. 12,
+Malang dan halo@kopilereng.example adalah data contoh yang dapat diganti.
+Tautan email menggunakan mailto: untuk membuka aplikasi email pengguna;
+tautan itu tidak langsung mengirim email.
+
+2. PERAN SETIAP FILE
+-------------------
+index.html     = struktur dan isi halaman Beranda.
+tentang.html   = struktur dan isi halaman Tentang.
+style.css      = aturan tampilan untuk kedua halaman.
+script.js      = perilaku interaktif dan komunikasi dengan API (fetch).
+server.js      = web server dan endpoint REST API Node.js.
+data/menu.json = sumber menu dan harga di backend.
+package.json   = skrip menjalankan server serta tes.
+README.txt     = petunjuk membuka dan menjalankan web.
+PENJELASAN.txt = dokumentasi yang sedang dibaca ini.
+
+HTML menentukan apa yang ada di halaman. CSS menentukan bagaimana tampilannya.
+JavaScript menentukan apa yang terjadi ketika pengguna berinteraksi.
+Contoh: tombol + dibuat dengan HTML, bentuknya diatur CSS, dan penambahan
+jumlah minuman saat tombol tersebut diklik dikerjakan JavaScript.
+
+File index(1).html dan style(1).css pada lampiran dibuat menjadi salinan bernama
+index.html dan style.css di paket ini. Nama tersebut sesuai dengan tautan
+halaman dan pemanggilan CSS. File lampiran awal tetap merupakan file asal.
+
+3. PENJELASAN HTML
+------------------
+A. Bagian dasar
+<!DOCTYPE html> menyatakan bahwa dokumen menggunakan HTML modern.
+<html lang="id"> memberi informasi bahwa bahasa utama halaman adalah Indonesia.
+<meta charset="UTF-8"> membantu menampilkan huruf, simbol, dan tanda baca.
+Meta viewport membuat ukuran halaman mengikuti lebar layar perangkat.
+<title> menentukan judul tab browser.
+
+B. Menghubungkan CSS dan JavaScript
+<link rel="stylesheet" href="style.css">
+Baris ini memanggil style.css dari folder yang sama.
+
+<script src="script.js" defer></script>
+Baris ini memanggil script.js. Atribut defer menunda eksekusi sampai HTML
+selesai dibaca sehingga elemen yang dicari JavaScript sudah tersedia.
+
+C. Elemen penyusun halaman
+<header>  : area atas yang berisi nama kedai dan navigasi.
+<nav>     : kumpulan tautan untuk berpindah halaman.
+<main>    : isi utama setiap halaman.
+<section> : kelompok konten seperti menu atau cerita kedai.
+<article> : satu kartu menu yang mempunyai judul, deskripsi, dan harga.
+<aside>   : informasi pendukung berupa ringkasan simulasi.
+<footer>  : bagian bawah yang berisi hak cipta dan tahun.
+<h1>      : judul utama halaman.
+<h2>/<h3> : judul bagian dan nama menu.
+<p>       : paragraf atau teks penjelasan.
+<a>       : tautan, misalnya href="tentang.html".
+<button>  : tombol interaksi; type="button" tidak mengirim formulir.
+<output>  : tempat menampilkan hasil seperti jumlah dan total harga.
+<dl>      : daftar istilah dan keterangannya pada halaman Tentang.
+<dt>      : label informasi, seperti "Alamat".
+<dd>      : nilai/keterangan dari label tersebut.
+
+D. class, id, dan data-*
+class mengelompokkan elemen untuk diatur CSS, misalnya class="menu".
+id menandai elemen tertentu, misalnya id="total-harga" yang dibaca JavaScript.
+Nilai id harus unik dalam satu halaman.
+
+Contoh data pada kartu menu:
+<article data-kategori="panas" data-nama="Kopi Tubruk" data-harga="15000">
+
+data-kategori dipakai untuk filter minuman.
+data-nama dipakai untuk rincian simulasi.
+data-harga dipakai untuk perhitungan, sehingga harus berupa angka tanpa Rp,
+titik pemisah ribuan, atau spasi. Tampilan "Rp 15.000" ditulis terpisah di <p>.
+
+E. Bantuan akses dan kondisi tanpa JavaScript
+aria-label memberi nama yang dapat dibaca pembaca layar.
+aria-current="page" menandai halaman yang sedang dibuka.
+aria-pressed menjelaskan apakah tombol tema/filter sedang aktif.
+role="status" dan aria-live="polite" membantu mengumumkan hasil interaksi.
+Tautan "Lewati ke isi utama" muncul ketika mendapat fokus dengan keyboard.
+
+Kontrol JavaScript memakai data-interaktif dan hidden. Kontrol baru ditampilkan
+setelah script berhasil dijalankan. Jika JavaScript dimatikan, isi halaman,
+daftar harga, dan navigasi tetap dapat dibaca; pesan <noscript> tampil di Beranda.
+
+4. PENJELASAN CSS (style.css)
+---------------------------
+A. Variabel warna di :root
+:root berisi variabel seperti --bg, --ink, --hijau, --kuning, dan --putih.
+Contoh background: var(--bg) berarti memakai nilai variabel --bg.
+Dengan variabel, perubahan warna utama cukup dilakukan di satu tempat.
+--putih berfungsi sebagai warna permukaan kartu; pada mode gelap nilainya gelap.
+
+B. Mode gelap
+Selector :root[data-tema="gelap"] berisi nilai warna khusus mode gelap.
+JavaScript mengubah atribut data-tema pada elemen <html>. Setelah atribut
+berubah, CSS menerapkan warna latar, kartu, dan teks yang sesuai.
+
+C. Pengaturan dasar
+box-sizing: border-box membuat ukuran elemen sudah memperhitungkan padding
+dan border. Reset margin/padding mengurangi jarak bawaan browser.
+font-family memilih Segoe UI atau font sistem tanpa mengunduh font luar.
+line-height: 1.6 mengatur jarak antarbaris agar teks mudah dibaca.
+[hidden] { display: none !important; } memastikan elemen dengan hidden
+tetap disembunyikan walaupun elemen itu juga mempunyai display: flex/grid.
+
+D. Navigasi dengan Flexbox
+display: flex pada nav mengatur logo dan navigasi dalam satu susunan fleksibel.
+justify-content: space-between memberi jarak antara kedua kelompok.
+align-items: center meratakan posisi vertikal.
+flex-wrap: wrap membolehkan susunan berpindah baris ketika ruang menyempit.
+
+E. Kartu menu dengan CSS Grid
+.menu memakai display: grid dan:
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+Browser menentukan jumlah kolom yang muat. Setiap kolom paling sedikit 240px,
+lalu mengisi ruang yang tersedia secara seimbang. gap memberi jarak antarkartu.
+Pada layar sangat kecil, media query mengubahnya menjadi satu kolom.
+
+F. Tombol dan respons pengguna
+.tombol mengatur tombol tautan pada pembuka.
+.filter mengatur tombol kategori dan .filter.aktif menandai pilihan aktif.
+.kontrol-jumlah mengatur tombol +/− dan angka jumlah.
+.ringkasan mengatur rincian pesanan dan total harga.
+:hover mengatur tampilan ketika penunjuk berada di atas tombol/tautan.
+:focus-visible memberi garis fokus saat menggunakan keyboard.
+:disabled menandai tombol yang belum atau tidak dapat digunakan.
+
+G. Responsif
+@media (max-width: 600px) menumpuk rincian dan total pada layar kecil,
+serta menyesuaikan jarak navigasi dan tinggi area pembuka.
+@media (max-width: 360px) mengurangi padding dan menetapkan satu kolom menu.
+clamp() pada ukuran judul membantu ukuran teks mengikuti lebar layar
+di antara batas terkecil dan terbesar yang ditentukan.
+
+5. PENJELASAN JAVASCRIPT (script.js)
+----------------------------------
+A. Pembungkus kode
+(() => { ... })(); adalah fungsi yang langsung dijalankan. Variabel di dalamnya
+tidak ditambahkan sebagai variabel global halaman. "use strict" membantu
+mendeteksi kesalahan JavaScript tertentu, seperti variabel yang belum dideklarasi.
+
+B. Format rupiah
+new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", ... })
+membuat pengubah angka menjadi penulisan uang Indonesia.
+formatRupiah.format(37000) menampilkan Rp 37.000; browser dapat memakai
+spasi khusus di antara simbol mata uang dan angkanya.
+
+C. siapkanTema()
+Fungsi ini mencari #tombol-tema dengan document.querySelector().
+Preferensi tema dibaca dari localStorage menggunakan kunci kopi-lereng-tema.
+Tema awal adalah terang ketika belum ada pilihan yang tersimpan.
+
+terapkanTema() mengubah document.documentElement.dataset.tema,
+teks tombol, dan atribut aria-pressed. Klik tombol menukar terang dan gelap.
+localStorage.setItem() menyimpan pilihan jika browser mengizinkannya.
+try/catch menjaga tombol tetap berfungsi ketika penyimpanan dibatasi.
+Saat membuka lewat file lokal, perilaku penyimpanan bergantung pada browser;
+server lokal dengan alamat yang sama membantu membuatnya lebih konsisten.
+
+D. siapkanMenu()
+Fungsi ini mencari #daftar-menu. Jika tidak ada, fungsi langsung berhenti.
+Karena itu script.js yang sama aman digunakan pada halaman Tentang.
+
+Ketika server aktif, siapkanMenu() menggunakan fetch("/api/menu") untuk
+mengambil data menu JSON lalu membuat kartu dengan document.createElement.
+Ketika API tidak aktif, kartu menu dari HTML tetap dipakai untuk simulasi.
+Array.from(...).map(...) membangun array daftarMenu dari kartu yang tampil.
+Setiap objek menyimpan id, nama, harga, kategori, jumlah, dan referensi tombol.
+Number(kartu.dataset.harga) mengubah teks angka pada kartu menjadi angka.
+
+E. perbaruiPesanan()
+Fungsi ini menghitung jumlah dan harga semua menu yang dipilih.
+Rumusnya: total = penjumlahan (harga tiap menu × jumlah tiap menu).
+Contoh 1 Kopi Tubruk + 1 Es Kopi Susu = 15.000 + 22.000 = Rp 37.000.
+
+forEach() memeriksa setiap menu. textContent memperbarui tulisan di halaman.
+Tombol − dinonaktifkan pada jumlah 0; tombol + dinonaktifkan pada jumlah 99.
+Tombol Kosongkan juga dinonaktifkan ketika belum ada minuman yang dipilih.
+Rincian jumlah dan nama digabung memakai join(" · ").
+
+F. Tombol tambah dan kurang
+addEventListener("click", ...) memasang fungsi yang berjalan saat tombol diklik.
+Tombol + menambah jumlah satu; tombol − mengurangi jumlah satu.
+Setelah jumlah berubah, perbaruiPesanan() menghitung dan menampilkan hasil baru.
+Jumlah dibatasi antara 0 dan 99 untuk setiap menu.
+
+G. Filter Semua, Panas, dan Dingin
+Klik filter membaca data-filter pada tombol, lalu membandingkannya dengan
+data-kategori pada kartu. menu.kartu.hidden menyembunyikan kartu yang tidak cocok.
+Pilihan "semua" menampilkan seluruh kartu.
+classList.toggle("aktif", ...) mengubah tampilan tombol filter yang aktif.
+Filter hanya mengatur kartu yang terlihat; pilihan pesanan tetap dihitung,
+termasuk minuman yang kartunya sedang disembunyikan.
+
+H. Tombol Kosongkan
+Klik #hapus-pesanan mengatur jumlah semua menu menjadi 0, memperbarui total,
+lalu menampilkan pesan bahwa simulasi pesanan dikosongkan.
+
+I. perbaruiTahun()
+new Date().getFullYear() membaca tahun menurut waktu perangkat pengguna.
+querySelectorAll("[data-tahun]") mencari penanda tahun pada footer,
+lalu textContent mengganti tulisan tahun. Jika JavaScript mati, tahun awal
+yang ditulis dalam HTML tetap tampil.
+
+J. Urutan kerja
+Browser membaca HTML, memuat CSS, lalu menjalankan script.js dengan defer.
+Script menyiapkan tema, memperbarui tahun, menghubungi API, lalu memasang
+interaksi pada menu. Ketika API tersambung, tombol Simpan pesanan demo aktif
+setelah ada menu yang dipilih. Tombol tersebut mengirim POST /api/pesanan.
+
+6. CARA MENGUBAH WEB
+-------------------
+- Ubah judul, deskripsi, dan nama kedai di index.html serta tentang.html.
+- Ubah cerita, alamat, jam buka, dan email di tentang.html.
+  Untuk email, ubah teks yang terlihat sekaligus nilai href="mailto:...".
+- Jika menjalankan server Node.js, ubah harga dan daftar menu pada
+  data/menu.json karena server menjadi sumber data utama.
+- Jika juga menginginkan tampilan saat offline, ubah data-harga, data-id,
+  nama, dan harga pada kartu index.html agar konsisten dengan API.
+- Ubah nama menu pada <h3>, data-nama, dan aria-label tombol/jumlah terkait.
+- Ubah kategori pada data-kategori sekaligus teks <span class="kategori">.
+  Gunakan panas atau dingin agar sesuai dengan tombol filter yang tersedia.
+- Untuk menambah menu server, tambahkan objek dengan id yang unik, nama,
+  deskripsi, kategori panas/dingin, dan harga numerik di data/menu.json.
+  Untuk mode offline, tambahkan juga kartu <article> pada index.html.
+- Ubah warna pada :root di style.css. Sesuaikan palet mode gelap jika diperlukan.
+- Ubah batas jumlah melalui nilai batasJumlah di script.js.
+- Setelah mengedit, simpan file dan muat ulang halaman browser.
+
+7. CARA KERJA REST API
+---------------------
+API adalah jembatan antara browser (frontend) dan server (backend). Browser
+memanggil endpoint menggunakan fetch(). Backend membaca data/menu.json,
+memeriksa isi pesanan, dan mengembalikan hasil dalam format JSON.
+
+Cara kerja:
+1. Browser dibuka melalui http://localhost:3000.
+2. script.js menjalankan GET /api/menu.
+3. server.js membaca data/menu.json dan mengirim daftar minuman JSON.
+4. script.js membuat kartu menu dan menghitung jumlah/harga di browser.
+5. Ketika tombol "Simpan pesanan demo" dipilih, JavaScript mengirim POST
+   /api/pesanan berisi id menu dan jumlah. Contoh body JSON:
+   {"items":[{"id":"kopi-tubruk","jumlah":2}]}
+6. Server memvalidasi id/jumlah, mengambil harga resmi dari menu.json,
+   menghitung subtotal dan total, membuat ID unik, dan menyimpan pesanan
+   sebagai satu baris JSON di data/pesanan.jsonl.
+7. Server mengirim status HTTP 201 (Created) dan rincian pesanan JSON.
+8. Browser menunjukkan ID pesanan serta total, lalu mereset jumlah.
+
+DAFTAR ENDPOINT
+GET  /api/health                   -> {"status":"ok",...}
+GET  /api/menu                     -> {"data":[...menu]}
+GET  /api/menu?kategori=panas      -> hanya menu panas
+GET  /api/menu/kopi-tubruk         -> satu menu menurut ID
+POST /api/pesanan                  -> {"pesan":"...","data":{...}}
+GET  /api/pesanan/<id>             -> detail pesanan demo
+
+Contoh pengujian langsung:
+Buka http://localhost:3000/api/menu di browser untuk melihat respons JSON.
+Dari terminal, gunakan npm test untuk menjalankan tes otomatis.
+
+Kenapa total dihitung di server? Angka di browser dapat diubah pengguna.
+Dengan mengambil harga resmi dari data/menu.json, backend tidak percaya
+angka total yang dikirim dari browser.
+
+8. BATASAN DAN HAL YANG PERLU DIPAHAMI
+------------------------------------
+REST API ini untuk demo belajar JavaScript, Node.js, JSON, GET/POST, dan
+fetch(). Penyimpanan pesanan menggunakan berkas JSON Lines di komputer,
+bukan database produksi atau pesanan yang terkirim ke kedai sungguhan.
+Tidak ada login, pembayaran, pengiriman, dan transaksi sungguhan. Server
+secara default hanya melayani komputer sendiri pada 127.0.0.1.
+
+Jika dibuka langsung melalui index.html, situs masih bisa memfilter menu,
+memakai tema, dan menghitung harga. Namun tombol simpan tidak aktif tanpa
+Node.js. Jumlah sementara di browser hilang saat halaman dimuat ulang.
+Tema tetap disimpan dalam localStorage jika browser mengizinkan.
+
+9. CONTOH PENJELASAN SINGKAT UNTUK PRESENTASI
+-------------------------------------------
+"Website Kopi Lereng menggunakan HTML untuk struktur, CSS untuk tampilan,
+dan JavaScript untuk interaksi di browser. Saya menambahkan REST API lokal
+dengan Node.js tanpa framework. Browser mengambil menu dengan metode GET,
+dan mengirim pilihan minuman ke server melalui metode POST. Server
+memvalidasi pesanan, menghitung total berdasarkan harga resmi dari JSON,
+lalu menyimpannya sebagai data demo di komputer. Proyek ini belum
+menerima pembayaran dan bukan sistem pesanan produksi."
